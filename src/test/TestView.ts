@@ -1,5 +1,11 @@
 import DateTime from "@web-atoms/date-time/dist/DateTime.js";
-import "./TestView.css";
+
+// irrespective of loading order
+// global must be loaded first and
+// local must override the global style
+import "./TestView.local.css";
+
+import "./TestView.global.css";
 
 export default class DateView extends HTMLElement {
 
