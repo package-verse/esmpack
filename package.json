@@ -1,0 +1,22 @@
+{
+  "name": "@package-verse/esmpack",
+  "version": "1.0.0",
+  "description": "ESM Pack Packer and Web Server with PostCSS and ESM Loader",
+  "homepage": "https://github.com/package-verse/esmpack#readme",
+  "bugs": {
+    "url": "https://github.com/package-verse/esmpack/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/package-verse/esmpack.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "git add -A && git commit -m \"dep vb\" && npm version patch",
+    "postversion": "git push --follow-tags"
+  }
+}
