@@ -7,16 +7,18 @@
     "url": "https://github.com/package-verse/esmpack/issues"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/package-verse/esmpack.git"
+    "url": "https://github.com/package-verse/esmpack"
   },
   "license": "ISC",
   "author": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "exit 0",
     "push": "git add -A && git commit -m \"dep vb\" && npm version patch",
     "postversion": "git push --follow-tags"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0"
   }
 }
