@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+    {
+        "name": "Launch Edge",
+        "request": "launch",
+        "type": "pwa-msedge",
+        "url": "http://127.0.0.1:8080/uiv/$CURRENT$/dist/c8-front-end",
+        "webRoot": "${workspaceFolder}"
+    },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "program": "${workspaceRoot}/dist/test.js",
+            "outFiles": [
+                "${workspaceRoot}/out/**/*.js"
+            ]
+        }
+    ]
+}

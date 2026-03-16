@@ -1,0 +1,48 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "All Build",
+            "dependsOn":[
+                "TypeScript Build Watch",
+                "Build CSS Watch",
+                "Web Atoms Dev Server"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "TypeScript Build Watch",
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "option": "watch",
+        },
+        {
+            "label": "Build CSS Watch",
+            "type": "shell",
+            "command": "npm",
+            "args": [
+                "run",
+                "build-css-watch"
+            ]
+        },
+        {
+            "label": "Web Atoms Dev Server",
+            "type": "shell",
+            "command": "wads",
+            "args": [
+                // "https://v2018-beta.tas800.com",
+                // "https://v2018.tas800.com",
+                // "https://v2025-test.800casting.com"
+                "https://v2025-test.tas800.com"
+                //"http://localhost:9991"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
