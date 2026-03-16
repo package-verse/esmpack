@@ -18,6 +18,9 @@ export default function sendJSHost(path: string, req: IncomingMessage, res: Serv
 </html>
 `;
 
-    res.writeHead(200, { "content-type": "text/html"});
+    res.writeHead(200, {
+        "content-type": "text/html",
+        "cache-control": "no-cache"
+    });
     res.end(text);
 }

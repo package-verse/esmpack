@@ -24,7 +24,10 @@ export default function sendList(reqPath, path: string, req: IncomingMessage, re
 
     const text = renderDirectoryListing(reqPath, entries);
 
-    res.writeHead(200, {"Content-Type": "text/html"});
+    res.writeHead(200, {
+      "Content-Type": "text/html",
+      "cache-control": "no-cache"
+    });
     res.end(text);
 }
 

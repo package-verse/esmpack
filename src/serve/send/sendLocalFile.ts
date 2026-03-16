@@ -28,6 +28,9 @@ function sendFile(filePath, res) {
       res.end(`500 Internal Server Error\n\n${err.message}`);
     }
   });
-  res.writeHead(200, { "Content-Type": mime.getType(filePath) });
+  res.writeHead(200, {
+    "Content-Type": mime.getType(filePath),
+    "cache-control": "no-cache"
+  });
   stream.pipe(res);
 }

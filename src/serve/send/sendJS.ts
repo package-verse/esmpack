@@ -47,6 +47,9 @@ export default function sendJS(path: string, req: IncomingMessage, res: ServerRe
         return `import "/node_modules/${g}"`;
     });
 
-    res.writeHead(200, { "content-type": "text/javascript "});
+    res.writeHead(200, {
+        "content-type": "text/javascript",
+        "cache-control": "no-cache"
+    });
     res.end(text);
 }
