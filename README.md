@@ -8,3 +8,9 @@ Because, there is no simple packer that just rewrites module paths. After ES6 an
 1. Creates a single pack JS file which only has import definition of all the imports.
 2. Packed file strips css and delivers separate css as combined CSS.
 3. Retains ESM source code as it is except import path, import path is rewritten to fully qualified CDN url. So caching is preserved over different main module versions but same dependencies.
+
+
+## Dev Packer
+
+1. Development time packer will generate HTML file along with the pack that will generate import maps along with the loading of control and hosting it.
+2. Dev Packer will generate `import("imported-path").then((r) => ESMPack.render(r))`, the library can create global `ESMPack.render` method. 
