@@ -42,7 +42,7 @@ function renderDirectoryListing(reqPath, entries: { isDir: boolean, name: string
   const rows = entries
     .map((e) => {
       let href = reqPath.replace(/\/$/, "") + "/" + encodeURIComponent(e.name) + (e.isDir ? "/" : "");
-      const icon = e.isDir ? "📁" : (e.name.endsWith(".js") ? "📄" : "🌐");
+      const icon = e.isDir ? "📁" : (/\.(js|html)$/i.test(e.name) ? "🌐" : "📄");
       const size = e.isDir ? "—" : formatSize(e.size);
       const modified = e.mtime.toISOString().replace("T", " ").slice(0, 19);
 
