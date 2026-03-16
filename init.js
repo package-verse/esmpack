@@ -1,7 +1,9 @@
 const ESMPack = window.ESMPack ||= {};
 ESMPack.installed ||= new Set();
 
-ESMPack.markAsInstalled ||= (url) => ESMPack.installed.add(url);
+ESMPack.markAsInstalled ||= (urls) => Array.isArray(urls)
+    ? urls.forEach(url => ESMPack.installed.add(url))
+    : ESMPack.installed.add(urls);
 
 ESMPack.installStyleSheet ||= (url) => {
 
