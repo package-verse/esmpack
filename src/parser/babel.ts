@@ -7,7 +7,7 @@ export class Babel {
 
         const presets = {
             sourceType: "module",
-            sourceMaps: "inline" as any,
+            sourceMaps: true,
             inputSourceMap: true,
             compact: false,
             comments: false,
@@ -21,11 +21,11 @@ export class Babel {
                                 ImportDeclaration(node) {
                                     const e = node.node;
                                     let source = e.source?.value;
-                                    if (source!) {
+                                    if (!source) {
                                         return node;
                                     }
                                     source = resolve(source);
-                                    node.source.value = source;
+                                    e.source.value = source;
                                     return node;
                                 },
                             }

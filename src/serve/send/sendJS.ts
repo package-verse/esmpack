@@ -1,11 +1,11 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Babel } from "../../parser/babel.js";
+import { parse } from "node:path";
 
 export default function sendJS(path: string, req: IncomingMessage, res: ServerResponse) {
 
 
-    const text = Babel.transform({ file: path, resolve(url) {
-        console.log(url);
+    let text = Babel.transform({ file: path, resolve(url) {
         if (url.endsWith(".css")) {
             url += ".js";
         }
@@ -13,7 +13,11 @@ export default function sendJS(path: string, req: IncomingMessage, res: ServerRe
             url = "/node_modules/" + url;
         }
         return url;
-    }})
+    }});
+
+    const { base } = parse(path);
+
+    text += `\n//# sourceMappingURL=${base}.map`;
 
     // let text = readFileSync(path, "utf-8");
 
