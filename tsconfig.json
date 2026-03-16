@@ -16,7 +16,8 @@
             "ES2018",
             "ES2021.WeakRef",
             "esnext.disposable",
-            "ES2021.String"
+            "ES2021.String",
+            "DOM"
         ]
     },
     "include": [

@@ -19,6 +19,15 @@
     "postversion": "git push --follow-tags"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0"
+    "@types/node": "^25.5.0",
+    "@types/ws": "^8.18.1"
+  },
+  "dependencies": {
+    "@web-atoms/date-time": "^3.0.3",
+    "colors": "^1.4.0",
+    "http-proxy-middleware": "^3.0.5",
+    "mime": "^4.1.0",
+    "portfinder": "^1.0.38",
+    "ws": "^8.19.0"
   }
 }
