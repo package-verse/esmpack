@@ -19,5 +19,11 @@ customElements.define("date-view", DateView);
     async render(imports: { default: any }, cs: HTMLScriptElement) {
         const view = new imports.default();
         cs.replaceWith(view);
+    },
+    installStyleSheet(src) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = src;
+        document.head.appendChild(link);
     }
 };

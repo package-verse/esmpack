@@ -51,7 +51,7 @@ function renderDirectoryListing(reqPath, entries: { isDir: boolean, name: string
       }
 
       return `<tr>
-        <td>${icon} <a href="/${href}">${e.name}${e.isDir ? "/" : ""}</a></td>
+        <td>${icon} <a href="${href.startsWith("/") ? href : "/" + href}">${e.name}${e.isDir ? "/" : ""}</a></td>
         <td>${size}</td>
         <td>${modified}</td>
       </tr>`;

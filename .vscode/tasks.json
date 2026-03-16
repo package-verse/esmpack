@@ -34,15 +34,11 @@
         {
             "label": "Web Atoms Dev Server",
             "type": "shell",
-            "command": "wads",
+            "command": "npm",
             "args": [
-                // "https://v2018-beta.tas800.com",
-                // "https://v2018.tas800.com",
-                // "https://v2025-test.800casting.com"
-                "https://v2025-test.tas800.com"
-                //"http://localhost:9991"
-            ],
-            "problemMatcher": []
+                "run",
+                "test-server"
+            ]
         }
     ]
 }

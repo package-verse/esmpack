@@ -6,6 +6,7 @@ import sendLocalFile from "./send/sendLocalFile.js";
 import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import colors from "colors";
 import sendJSHost from "./send/sendJSHost.js";
+import sendCSSJS from "./send/sendCSSJS.js";
 
 
 let middleware;
@@ -18,6 +19,12 @@ export default function WebServer(req: IncomingMessage, res: ServerResponse) {
     if (existsSync(fullPath)) {
         // server local..
         sendLocalFile(pathname, fullPath, req, res);
+        return;
+    }
+
+    const css = fullPath.replace(/\.js$/, "");
+    if (existsSync(css)) {
+        sendCSSJS(pathname.substring(0, pathname.length - 3), req, res);
         return;
     }
 
