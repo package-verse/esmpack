@@ -11,6 +11,7 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "noUnusedLocals": true,
+        "importHelpers": true,
         "jsxFactory": "XNode.create",
         "lib": [
             "ES2018",

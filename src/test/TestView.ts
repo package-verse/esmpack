@@ -6,7 +6,9 @@ import DateTime from "@web-atoms/date-time/dist/DateTime.js";
 import "./TestView.local.css";
 
 import "./TestView.global.css";
+import LogDecorator from "./LogDecorator.js";
 
+@LogDecorator
 export default class DateView extends HTMLElement {
 
     connectedCallback() {

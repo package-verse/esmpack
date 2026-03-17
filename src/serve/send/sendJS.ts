@@ -1,13 +1,29 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Babel } from "../../parser/babel.js";
-import { parse } from "node:path";
+import path, { parse } from "node:path";
+import { ProcessOptions } from "../../ProcessArgs.js";
+import { readFileSync } from "node:fs";
 
-export default function sendJS(path: string, req: IncomingMessage, res: ServerResponse) {
+export default function sendJS(filePath: string, req: IncomingMessage, res: ServerResponse) {
 
 
-    let text = Babel.transform({ file: path, resolve(url) {
+    let text = Babel.transform({ file: filePath, resolve(url) {
         if (url.endsWith(".css")) {
             url += ".js";
+        }
+        // check if it has no extension...
+        const { ext } = parse(url);
+        if (!ext) {
+            // fetch module...
+            const tokens = url.split("/");
+            let [packageName] = tokens;
+            if (packageName.startsWith("@")) {
+                packageName += "/" + tokens.shift();
+            }
+            const packageJsonPath = path.resolve(ProcessOptions.cwd, "node_modules", packageName, "package.json");
+            const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+            const start = packageJson["module"] || packageJson["main"];
+            return "/node_modules/" + url + "/" + start;
         }
         if (!url.startsWith(".")) {
             url = "/node_modules/" + url;
@@ -15,7 +31,7 @@ export default function sendJS(path: string, req: IncomingMessage, res: ServerRe
         return url;
     }});
 
-    const { base } = parse(path);
+    const { base } = parse(filePath);
 
     text += `\n//# sourceMappingURL=${base}.map`;
 

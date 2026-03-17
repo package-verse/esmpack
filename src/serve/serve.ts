@@ -7,6 +7,8 @@ import https from "https";
 import url from 'url';
 import { WebSocketServer } from "ws";
 import fs from "fs";
+import forge from "node-forge";
+
 var netFaces = os.networkInterfaces();
 
 function createCert() {
@@ -17,7 +19,6 @@ function createCert() {
         return JSON.parse(fs.readFileSync(certPath, { encoding: "utf8", flag: "r" }));
     }
 
-    var forge = require('node-forge');
     var pki = forge.pki;
 
     // generate a key pair or use one you have already
