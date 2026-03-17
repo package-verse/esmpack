@@ -1,13 +1,6 @@
 {
     "version": "0.2.0",
     "configurations": [
-    {
-        "name": "Launch Edge",
-        "request": "launch",
-        "type": "pwa-msedge",
-        "url": "http://127.0.0.1:8080/uiv/$CURRENT$/dist/c8-front-end",
-        "webRoot": "${workspaceFolder}"
-    },
         {
             "type": "node",
             "request": "launch",
@@ -15,6 +8,16 @@
             "program": "${workspaceRoot}/dist/test.js",
             "outFiles": [
                 "${workspaceRoot}/out/**/*.js"
+            ]
+        },
+         {
+            "name": "Attach to Process",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "localRoot": "${workspaceRoot}",
+            "outFiles": [
+                "${workspaceFolder}/dist/**/*.js",
             ]
         }
     ]

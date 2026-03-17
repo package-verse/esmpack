@@ -12,6 +12,9 @@ for(let i=0; i< length;i++) {
 }
 
 const last = argv[argv.length-1];
+
 export const fileArgument = last.startsWith("--") ? void 0 : last;
+
+
 
 ProcessOptions.cwd ||= process.cwd();

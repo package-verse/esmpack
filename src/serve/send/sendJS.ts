@@ -2,33 +2,76 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { Babel } from "../../parser/babel.js";
 import path, { parse } from "node:path";
 import { ProcessOptions } from "../../ProcessArgs.js";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 export default function sendJS(filePath: string, req: IncomingMessage, res: ServerResponse) {
 
 
-    let text = Babel.transform({ file: filePath, resolve(url) {
-        if (url.endsWith(".css")) {
-            url += ".js";
-        }
+    let text = Babel.transform({ file: filePath, resolve(url, sourceFile) {
         // check if it has no extension...
         const { ext } = parse(url);
         if (!ext) {
+
+            // this is case for tslib, reflect_metadata
+            
             // fetch module...
             const tokens = url.split("/");
-            let [packageName] = tokens;
+            let packageName = tokens.shift();
             if (packageName.startsWith("@")) {
                 packageName += "/" + tokens.shift();
             }
             const packageJsonPath = path.resolve(ProcessOptions.cwd, "node_modules", packageName, "package.json");
-            const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-            const start = packageJson["module"] || packageJson["main"];
-            return "/node_modules/" + url + "/" + start;
+            if (existsSync(packageJsonPath)) {
+                const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+                const start = packageJson["module"] || packageJson["main"];
+                return "/node_modules/" + url + "/" + start;
+            }
+
         }
+
+
         if (!url.startsWith(".")) {
-            url = "/node_modules/" + url;
+            const resolved = path.resolve(ProcessOptions.cwd, "node_modules/" + url);
+            if (existsSync(resolved)) {
+                url = "/node_modules/" + url;
+                return url;
+            }
+
+            const tokens = url.split("/");
+            let packageName = tokens.shift();
+            if (packageName.startsWith("@")) {
+                packageName += "/" + tokens.shift();
+            }
+
+            const mainModuleFile = path.resolve(ProcessOptions.cwd, ... tokens);
+            if (existsSync(mainModuleFile)) {
+                url = tokens.join("/");
+                if (!url.endsWith(".js")) {
+                    return "/" + url + ".js";
+                }
+                return "/" + url;
+            }
+
+            return "/" + url;
         }
-        return url;
+
+        const jsFile = path.resolve(path.dirname(filePath), url);
+        if (existsSync(jsFile)) {
+            if (!jsFile.endsWith(".js")) {
+                url += ".js";
+            }
+            return url;
+        }
+
+        // is it refernced from source...
+        const absoluteSourcePath = path.join( path.dirname(filePath), sourceFile);
+        const localSourceFile = path.resolve( absoluteSourcePath, url);
+        const localFile = path.resolve(ProcessOptions.cwd, localSourceFile);
+        if (!localFile.endsWith(".js")) {
+            return "/" + localSourceFile + ".js";
+        }
+        return "/" + localSourceFile;
+
     }});
 
     const { base } = parse(filePath);
