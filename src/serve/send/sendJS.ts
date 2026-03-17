@@ -63,7 +63,7 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
             return url;
         }
 
-        // is it refernced from source...
+        // is it referenced from source...
         const absoluteSourcePath = path.join( path.dirname(filePath), sourceFile);
         const localSourceFile = path.resolve( absoluteSourcePath, url);
         const localFile = path.resolve(ProcessOptions.cwd, localSourceFile);
