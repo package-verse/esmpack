@@ -10,16 +10,21 @@ import "./TestView.local.css";
 import "./TestView.global.css";
 import LogDecorator from "./LogDecorator.js";
 
+import Clock2 from "./Clock2.svg";
+
 @LogDecorator
 export default class DateView extends HTMLElement {
 
     connectedCallback() {
 
-        const img = document.createElement("img");
+        let img = document.createElement("img");
         img.src = clock;
         const span = document.createElement("span");
         this.appendChild(img);
         this.appendChild(span);
+        img = document.createElement("img");
+        img.src = Clock2;
+        this.appendChild(img);
         setInterval(() => {
             const now = DateTime.now;
             span.textContent = now.toJSON();

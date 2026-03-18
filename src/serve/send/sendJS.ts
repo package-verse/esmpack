@@ -8,6 +8,9 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
 
 
     let text = Babel.transform({ file: filePath, resolve(url, sourceFile) {
+
+        const originalUrl = url;
+
         // check if it has no extension...
         const { ext } = parse(url);
         if (!ext) {
@@ -20,39 +23,24 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
             if (packageName.startsWith("@")) {
                 packageName += "/" + tokens.shift();
             }
+
             const packageJsonPath = path.resolve(ProcessOptions.cwd, "node_modules", packageName, "package.json");
             if (existsSync(packageJsonPath)) {
                 const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
                 const start = packageJson["module"] || packageJson["main"];
-                return "/node_modules/" + url + "/" + start;
+                return url + "/" + start;
             }
 
         }
 
 
         if (!url.startsWith(".")) {
-            const resolved = path.resolve(ProcessOptions.cwd, "node_modules/" + url);
-            if (existsSync(resolved)) {
-                url = "/node_modules/" + url;
-                return url;
+
+            if (!url.endsWith(".js")) {
+                url += ".js";
             }
 
-            const tokens = url.split("/");
-            let packageName = tokens.shift();
-            if (packageName.startsWith("@")) {
-                packageName += "/" + tokens.shift();
-            }
-
-            const mainModuleFile = path.resolve(ProcessOptions.cwd, ... tokens);
-            if (existsSync(mainModuleFile)) {
-                url = tokens.join("/");
-                if (!url.endsWith(".js")) {
-                    return "/" + url + ".js";
-                }
-                return "/" + url;
-            }
-
-            return "/" + url;
+            return url;
         }
 
         const jsFile = path.resolve(path.dirname(filePath), url);
@@ -63,14 +51,23 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
             return url;
         }
 
-        // is it referenced from source...
-        const absoluteSourcePath = path.join( path.dirname(filePath), sourceFile);
-        const localSourceFile = path.resolve( absoluteSourcePath, url);
-        const localFile = path.resolve(ProcessOptions.cwd, localSourceFile);
-        if (!localFile.endsWith(".js")) {
-            return "/" + localSourceFile + ".js";
+        if (url.endsWith(".js")) {
+            return url;
         }
-        return "/" + localSourceFile;
+
+        // is it referenced from source...
+        const dir = path.dirname(filePath);
+        const absoluteSourcePath = path.resolve( dir, path.dirname(sourceFile));
+        console.log(`Absolute Path is ${absoluteSourcePath}`);
+        const referencedAbsolutePath = path.join(absoluteSourcePath, url);
+        if (existsSync(referencedAbsolutePath)) {
+            const relative = path.relative(dir, referencedAbsolutePath).replaceAll("\\", "/");
+            if(!relative.endsWith(".js")) {
+                return relative + ".js";
+            }
+            return relative;
+        }
+        return originalUrl;
 
     }});
 

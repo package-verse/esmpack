@@ -1,6 +1,12 @@
 import { IncomingMessage, ServerResponse } from "node:http";
+import { importMap, packageInfo } from "./packageInfo.js";
 
 export default function sendJSHost(path: string, req: IncomingMessage, res: ServerResponse) {
+
+    // generate import maps
+    // for dynamic scripts
+    // this is to avoid path renaming and support dynamic module loading
+
     const text = `
 <!DOCTYPE html>
 <html lang="en">
@@ -10,9 +16,12 @@ export default function sendJSHost(path: string, req: IncomingMessage, res: Serv
     <title>Index of ${path}</title>
 </head>
 <body>
+    <script type="importmap">
+        ${JSON.stringify(importMap, void 0, 2)}
+    </script>
     <script>
         const cs = document.currentScript;
-        import("/${path}").then((r) => ESMPack.render(r, cs), (error) => cs.replaceWith(document.createTextNode(error.stack || error)));
+        import("${packageInfo.name}/${path}").then((r) => ESMPack.render(r, cs), (error) => cs.replaceWith(document.createTextNode(error.stack || error)));
     </script>
 </body>
 </html>

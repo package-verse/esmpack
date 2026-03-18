@@ -7,7 +7,9 @@
  *
  * For App.js following packed scripts will be generated.
  * 1. App.pack.js
- *      Imports all nested dependencies of App.js
+ *      Push Import Maps script tag
+ *      Imports all nested dependencies of App.js that should not contain fully qualified path
+ *      Import dynamically loaded modules as well
  *      Loads App.pack.global.css
  *      Loads App.pack.local.css
  *      Imports App.js dynamically so CSS can be ready before hosting the User interface
