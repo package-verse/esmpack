@@ -8,6 +8,8 @@
  * For App.js following packed scripts will be generated.
  * 1. App.pack.js
  *      Push Import Maps script tag
+ *      Add import map for non js modules as well, and for this
+ *         every nested dependency must be inspected.
  *      Push empty module for CSS
  *      Imports all nested dependencies of App.js that should not contain fully qualified path
  *      Import dynamically loaded modules as well
