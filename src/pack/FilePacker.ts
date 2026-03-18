@@ -18,6 +18,8 @@
  *      Imports App.js dynamically so CSS can be ready before hosting the User interface
  * 2. App.pack.global.css
  * 3. App.pack.local.css
+ * 4. App.pack.{hash-of-absolute-module-path}.js <-- this will be a dependency for non js module such as image or json etc.
+ *      This will load an absolute path via resolve
  */
 export default class FilePacker {
 
