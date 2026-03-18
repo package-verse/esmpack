@@ -10,11 +10,12 @@
  *      Push Import Maps script tag
  *      Add import map for non js modules as well, and for this
  *         every nested dependency must be inspected.
+ *         Json module should load json via hashed-dependency
+ *         Image module should load path of module via hashed-dependency
+ *         CSS module should inject full path to the browser 
  *      Push empty module for CSS
  *      Imports all nested dependencies of App.js that should not contain fully qualified path
  *      Import dynamically loaded modules as well
- *      Loads App.pack.global.css
- *      Loads App.pack.local.css
  *      Imports App.js dynamically so CSS can be ready before hosting the User interface
  * 2. App.pack.global.css
  * 3. App.pack.local.css
