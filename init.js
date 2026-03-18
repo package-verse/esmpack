@@ -1,12 +1,5 @@
 const ESMPack = window.ESMPack ||= {};
-ESMPack.installed ||= new Set();
-
-ESMPack.markAsInstalled ||= (urls) => Array.isArray(urls)
-    ? urls.forEach(url => ESMPack.installed.add(url))
-    : ESMPack.installed.add(urls);
-
 ESMPack.installStyleSheet ||= (url) => {
-
     const installCss = (url) => {
 
         const link = document.createElement("link");
@@ -17,11 +10,6 @@ ESMPack.installStyleSheet ||= (url) => {
             ? "afterbegin"
             : "beforeend", link);
     };
-
-    if (ESMPack.installed.has(url)) {
-        return;
-    }
-    ESMPack.installed.add(url);
     if(document.readyState === "complete") {
         installCss(url);
     } else {

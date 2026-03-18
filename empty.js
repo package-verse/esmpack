@@ -1,0 +1,1 @@
+// this is just an empty module placeholder for CSS modules
