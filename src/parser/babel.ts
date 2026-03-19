@@ -3,6 +3,7 @@ import { readFileSync } from "fs";
 import { ProcessOptions } from "../ProcessArgs.js";
 import { parse } from "path";
 import { CallExpression, ImportDeclaration, ImportExpression } from "@babel/types";
+import { readFile } from "fs/promises";
 
 
 export class Babel {
@@ -17,14 +18,37 @@ export class Babel {
         dynamicResolve?: (url: string, sourceFile: string) => string
     }) {
 
+        const presets: TransformOptions = Babel.prepareOptions(file, dynamicResolve, resolve);
+
+        const p = { ... presets, filename: file };
+        const code = readFileSync(file, "utf8");
+        const result = transformSync(code, p);
+        return result.code;
+    }
+
+    static async transformAsync({
+        file,
+        resolve,
+        dynamicResolve
+    }) {
+        const presets: TransformOptions = Babel.prepareOptions(file, dynamicResolve, resolve);
+
+        const p = { ... presets, filename: file };
+        const code = await readFile(file, "utf8");
+        const result = transformSync(code, p);
+        return result.code;
+
+    }
+
+    private static prepareOptions(file: string, dynamicResolve: (url: string, sourceFile: string) => string, resolve: (url: string, sourceFile: string) => string) {
         const { base: name } = parse(file);
 
-        function CallExpression (node: NodePath<CallExpression>) {
+        function CallExpression(node: NodePath<CallExpression>) {
             if (node.node.callee.type !== "Import") {
                 return node;
             }
             const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
-            const [ arg1 ] = node.node.arguments;
+            const [arg1] = node.node.arguments;
             if (!arg1) {
                 return node;
             }
@@ -65,7 +89,7 @@ export class Babel {
             getModuleId: () => "v",
             "plugins": [
                 [
-                    function(babel) {
+                    function (babel) {
                         return {
                             name: "Import Transformer",
                             visitor: {
@@ -80,19 +104,13 @@ export class Babel {
                                     e.source.value = source;
                                     return node;
                                 },
-                                ... (dynamicResolve ? { CallExpression, ImportExpression } : {}),
+                                ...(dynamicResolve ? { CallExpression, ImportExpression } : {}),
                             }
                         };
                     }
                 ]
-
             ]
         };
-
-        const p = { ... presets, filename: file };
-        const code = readFileSync(file, "utf8");
-        const result = transformSync(code, p);
-        return result.code;
+        return presets;
     }
-
 }

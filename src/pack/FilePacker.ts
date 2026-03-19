@@ -1,3 +1,6 @@
+import path from "path";
+import { Babel } from "../parser/babel.js";
+
 /**
  * File Packer must do following tasks...
  * 1. Visit every JavaScript file
@@ -24,8 +27,13 @@
  */
 export default class FilePacker {
 
-    globalCss = [];
-    localCss = [];
+    readonly absoluteSrc: string;
+
+    readonly cssImports = [];
+
+    readonly jsonImports = [];
+
+    readonly pathImports = [];
 
     constructor(
         public readonly root: string,
@@ -33,10 +41,47 @@ export default class FilePacker {
         public readonly prefix: string
     ) {
         // empty
+        // let us make src relative to the root if an absolute path was supplied
+        if (path.isAbsolute(this.src)) {
+            this.src = path.relative(this.root, this.src);
+        }
+        this.absoluteSrc = path.resolve(this.root, this.src);
     }
 
     async pack() {
 
+        const resolve = (url, sourceFile) => this.resolve(url, sourceFile);
+
+        // we don't need the code
+        await Babel.transformAsync({
+            file: path.join(this.root, this.src),
+            resolve,
+            dynamicResolve: resolve
+        });
+
+
     }
 
+    resolve(url: string, sourceFile: string) {
+
+        const moduleUrl = this.moduleUrl(url, sourceFile);
+
+        if (url.endsWith(".css")) {
+            this.cssImports.push(moduleUrl);
+            return url;
+        }
+        if (url.endsWith(".json")) {
+            this.jsonImports.push(moduleUrl);
+            return url;
+        }
+
+        if (!url.endsWith(".js")) {
+
+        }
+        return url;
+    }
+
+    moduleUrl(url: string, sourceFile: string) {
+        return url;
+    }
 }

@@ -5,7 +5,8 @@ import sendList from "./sendList.js";
 import sendJS from "./sendJS.js";
 export default function sendLocalFile(reqPath: string, path: string, req: IncomingMessage, res: ServerResponse) {
 
-    if (path.endsWith(".js")) {
+    if (path.endsWith(".js")
+        && !path.endsWith(".pack.js")) {
         // send JS
         return sendJS(path, req, res);
     }
