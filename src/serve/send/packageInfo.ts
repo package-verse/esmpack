@@ -17,14 +17,18 @@ for (const [key] of Object.entries(packageInfo.dependencies)) {
         continue;
     }
 
-    const modulePath = "/node_modules/" + key + "/";
+    let modulePath = "/node_modules/" + key + "/";
 
     // read package.json
     const modulePackageJson = JSON.parse(readFileSync(modulePackageJsonFilePath, "utf-8"));
+
     imports[key] = path.join(modulePath , modulePackageJson.module
         || (modulePackageJson.type === "module"
             ? modulePackageJson.main : "index.js"));
 
+    if (modulePackageJson.esm) {
+        modulePath += modulePackageJson.esm + "/";
+    }
     imports[key + "/"] = modulePath;
 
 }
