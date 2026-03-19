@@ -1,5 +1,6 @@
 import path from "path";
 import { Babel } from "../parser/babel.js";
+import moduleImports, { IModuleImports } from "./ModuleImports.js";
 
 /**
  * File Packer must do following tasks...
@@ -29,6 +30,8 @@ export default class FilePacker {
 
     readonly absoluteSrc: string;
 
+    modules: IModuleImports;
+
     readonly cssImports = [];
 
     readonly jsonImports = [];
@@ -49,6 +52,9 @@ export default class FilePacker {
     }
 
     async pack() {
+
+        // resolve package.json
+        this.modules = await moduleImports(this.root);
 
         const resolve = (url, sourceFile) => this.resolve(url, sourceFile);
 
@@ -83,7 +89,7 @@ export default class FilePacker {
 
     moduleUrl(url: string, sourceFile: string) {
 
-        
+
 
         return url;
     }
