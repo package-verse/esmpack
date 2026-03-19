@@ -1,6 +1,6 @@
 import path from "path";
 import { Babel } from "../parser/babel.js";
-import moduleImports, { IModuleImports } from "./ModuleImports.js";
+import packageMap, { IPackageMap } from "./packageMap.js";
 
 /**
  * File Packer must do following tasks...
@@ -21,16 +21,12 @@ import moduleImports, { IModuleImports } from "./ModuleImports.js";
  *      Imports all nested dependencies of App.js that should not contain fully qualified path
  *      Import dynamically loaded modules as well
  *      Imports App.js dynamically so CSS can be ready before hosting the User interface
- * 2. App.pack.global.css
- * 3. App.pack.local.css
- * 4. App.pack.{hash-of-absolute-module-path}.js <-- this will be a dependency for non js module such as image or json etc.
- *      This will load an absolute path via resolve
  */
 export default class FilePacker {
 
     readonly absoluteSrc: string;
 
-    modules: IModuleImports;
+    modules: IPackageMap;
 
     readonly cssImports = [];
 
@@ -54,7 +50,7 @@ export default class FilePacker {
     async pack() {
 
         // resolve package.json
-        this.modules = await moduleImports(this.root);
+        this.modules = await packageMap(this.root);
 
         const resolve = (url, sourceFile) => this.resolve(url, sourceFile);
 
