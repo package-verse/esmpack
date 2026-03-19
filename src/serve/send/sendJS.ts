@@ -1,62 +1,38 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Babel } from "../../parser/babel.js";
 import path, { parse } from "node:path";
-import { ProcessOptions } from "../../ProcessArgs.js";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 
 export default function sendJS(filePath: string, req: IncomingMessage, res: ServerResponse) {
 
     const resolve = (url: string, sourceFile: string) => {
 
+        if (url.endsWith(".js")) {
+            return url;
+        }
+
         if(!sourceFile) {
             sourceFile = filePath;
         }
 
-        const originalUrl = url;
+        if (!url.startsWith(".")) {
 
-        // check if it has no extension...
-        const { ext } = parse(url);
-        if (!ext) {
-
-            // this is case for tslib, reflect_metadata
-            
-            // fetch module...
+            // we need to include .js for every module relative path
             const tokens = url.split("/");
             let packageName = tokens.shift();
             if (packageName.startsWith("@")) {
                 packageName += "/" + tokens.shift();
             }
 
-            const packageJsonPath = path.resolve(ProcessOptions.cwd, "node_modules", packageName, "package.json");
-            if (existsSync(packageJsonPath)) {
-                const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-                const start = packageJson["module"] || packageJson["main"];
-                return url + "/" + start;
-            }
-
-        }
-
-
-        if (!url.startsWith(".")) {
-
-            if (!url.endsWith(".js")) {
-                url += ".js";
+            if (tokens.length) {
+                if (!url.endsWith(".js")) {
+                    return url + ".js";
+                }
             }
 
             return url;
         }
 
-        const jsFile = path.resolve(path.dirname(filePath), url);
-        if (existsSync(jsFile)) {
-            if (!jsFile.endsWith(".js")) {
-                url += ".js";
-            }
-            return url;
-        }
-
-        if (url.endsWith(".js")) {
-            return url;
-        }
 
         // is it referenced from source...
         const dir = path.dirname(filePath);
@@ -69,8 +45,9 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
             }
             return relative;
         }
-        return originalUrl;
 
+
+        return url + ".js";
     };
 
 
