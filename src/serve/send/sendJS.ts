@@ -6,8 +6,11 @@ import { existsSync, readFileSync } from "node:fs";
 
 export default function sendJS(filePath: string, req: IncomingMessage, res: ServerResponse) {
 
+    const resolve = (url: string, sourceFile: string) => {
 
-    let text = Babel.transform({ file: filePath, resolve(url, sourceFile) {
+        if(!sourceFile) {
+            sourceFile = filePath;
+        }
 
         const originalUrl = url;
 
@@ -58,7 +61,6 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
         // is it referenced from source...
         const dir = path.dirname(filePath);
         const absoluteSourcePath = path.resolve( dir, path.dirname(sourceFile));
-        console.log(`Absolute Path is ${absoluteSourcePath}`);
         const referencedAbsolutePath = path.join(absoluteSourcePath, url);
         if (existsSync(referencedAbsolutePath)) {
             const relative = path.relative(dir, referencedAbsolutePath).replaceAll("\\", "/");
@@ -69,55 +71,14 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
         }
         return originalUrl;
 
-    }});
+    };
+
+
+    let text = Babel.transform({ file: filePath, resolve, dynamicResolve: resolve});
 
     const { base } = parse(filePath);
 
     text += `\n//# sourceMappingURL=${base}.map`;
-
-    // let text = readFileSync(path, "utf-8");
-
-    // // change references....
-    // // text = text.replace(/from\s*\"([^\.][^\"]+)\"/gm, `from "/node_modules/$1"`);
-
-    // // remap CSS
-    // text = RegExpExtra.replaceAll(text, /from\s*\"([^\"]+)\"/gm, (
-    //     { text, match }
-    // ) => {
-    //     if (text) {
-    //         return text;
-    //     }
-    //     const [matched, g] = match;
-    //     if (g.endsWith(".css")) {
-    //         // we need to find source...
-    //         return `from "/node_modules/${g}.js"`;
-    //     }
-    //     if (g.startsWith(".")) {
-    //         return matched;
-    //     }
-    //     return `from "/node_modules/${g}"`;
-    // });
-
-    // text = RegExpExtra.replaceAll(text, /import\s*\"([^\"]+)\"/gm, (
-    //     { text, match }
-    // ) => {
-    //     if (text) {
-    //         return text;
-    //     }
-    //     const [matched, g] = match;
-    //     if (g.endsWith(".css")) {
-    //         // we need to find source...
-    //         let cssPath = g;
-    //         if (!cssPath.startsWith(".")) {
-    //             cssPath = "/node_modules/" + cssPath; 
-    //         }
-    //         return `import "${cssPath}.js"`;
-    //     }
-    //     if (g.startsWith(".")) {
-    //         return matched;
-    //     }
-    //     return `import "/node_modules/${g}"`;
-    // });
 
     res.writeHead(200, {
         "content-type": "text/javascript",

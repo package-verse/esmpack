@@ -1,18 +1,59 @@
-import { transformSync  } from "@babel/core";
+import { NodePath, TransformOptions, transformSync  } from "@babel/core";
 import { readFileSync } from "fs";
 import { ProcessOptions } from "../ProcessArgs.js";
 import { parse } from "path";
+import { CallExpression, ImportDeclaration, ImportExpression } from "@babel/types";
+
 
 export class Babel {
 
-    static transform({ file, resolve }: { file: string, resolve: (url: string, sourceFile: string) => string }) {
+    static transform({
+        file,
+        resolve,
+        dynamicResolve
+    }: {
+        file: string,
+        resolve: (url: string, sourceFile: string) => string,
+        dynamicResolve?: (url: string, sourceFile: string) => string
+    }) {
 
         const { base: name } = parse(file);
 
-        const presets = {
+        function CallExpression (node: NodePath<CallExpression>) {
+            if (node.node.callee.type !== "Import") {
+                return node;
+            }
+            const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
+            const [ arg1 ] = node.node.arguments;
+            if (!arg1) {
+                return node;
+            }
+            if (arg1.type !== "StringLiteral") {
+                return node;
+            }
+            const v = dynamicResolve(arg1.value, sourceFile);
+            if (v !== arg1.value) {
+                arg1.value = v || arg1.value;
+            }
+            return node;
+        };
+
+        function ImportExpression(node: NodePath<ImportExpression>) {
+            const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
+            const { source } = node.node;
+            if (source.type !== "StringLiteral") {
+                return node;
+            }
+            const v = dynamicResolve(source.value, sourceFile);
+            if (v !== source.value) {
+                source.value = v || source.value;
+            }
+            return node;
+        }
+
+        const presets: TransformOptions = {
             sourceType: "module",
             sourceMaps: true,
-            inputSourceMap: true,
             caller: {
                 name,
                 supportsDynamicImport: true,
@@ -28,17 +69,18 @@ export class Babel {
                         return {
                             name: "Import Transformer",
                             visitor: {
-                                ImportDeclaration(node) {
+                                ImportDeclaration(node: NodePath<ImportDeclaration>) {
                                     const e = node.node;
                                     let source = e.source?.value;
                                     if (!source) {
                                         return node;
                                     }
-                                    const sourceFile = node.hub?.file?.inputMap?.sourcemap?.sources?.[0];
+                                    const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
                                     source = resolve(source, sourceFile);
                                     e.source.value = source;
                                     return node;
                                 },
+                                ... (dynamicResolve ? { CallExpression, ImportExpression } : {}),
                             }
                         };
                     }

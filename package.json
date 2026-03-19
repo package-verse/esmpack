@@ -21,6 +21,7 @@
     "postversion": "git push --follow-tags"
   },
   "devDependencies": {
+    "@types/babel__core": "^7.20.5",
     "@types/node": "^25.5.0",
     "@types/ws": "^8.18.1",
     "cssnano": "^7.0.6",
