@@ -26,14 +26,14 @@ for (const [key] of Object.entries(packageInfo.dependencies)) {
         || (modulePackageJson.type === "module"
             ? modulePackageJson.main : "index.js"));
 
-    imports[key + "/"] = modulePath;
+    imports[`${key}/`] = modulePath;
 
     if (modulePackageJson.esm) {
-        for(const [key, value] of Object.entries(modulePackageJson.esm)) {
-            imports[key + "/" + key + "/"] = modulePath + "/" + value ;
+        for(const [distKey, value] of Object.entries(modulePackageJson.esm)) {
+            imports[`${key}/${distKey}/`] = `${modulePath}/${value}` ;
         }
     }
-    imports[key + "/"] = modulePath;
+    imports[`${key}/`] = modulePath;
 
 }
 
