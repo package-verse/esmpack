@@ -28,7 +28,9 @@ for (const [key] of Object.entries(packageInfo.dependencies)) {
 
     const { exports: moduleExports } = modulePackageJson;
     if(moduleExports) {
-        moduleMain =  moduleExports["."]["default"] || moduleMain;
+        moduleMain =  moduleExports["."]?.["module"]?.["default"]
+            || moduleExports["."]?.["default"]
+            || moduleMain;
     }
 
     if (moduleMain) {
