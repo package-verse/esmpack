@@ -26,8 +26,12 @@ for (const [key] of Object.entries(packageInfo.dependencies)) {
         || (modulePackageJson.type === "module"
             ? modulePackageJson.main : "index.js"));
 
+    imports[key + "/"] = modulePath;
+
     if (modulePackageJson.esm) {
-        modulePath += modulePackageJson.esm + "/";
+        for(const [key, value] of Object.entries(modulePackageJson.esm)) {
+            imports[key + "/" + key + "/"] = modulePath + "/" + value ;
+        }
     }
     imports[key + "/"] = modulePath;
 
