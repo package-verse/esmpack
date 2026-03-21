@@ -30,7 +30,7 @@ for (const [key] of Object.entries(packageInfo.dependencies)) {
 
     if (modulePackageJson.esm) {
         for(const [distKey, value] of Object.entries(modulePackageJson.esm)) {
-            imports[`${key}/${distKey}/`] = `${modulePath}/${value}/` ;
+            imports[`${key}/${distKey}/`] = `${modulePath}${value}/` ;
         }
     }
     imports[`${key}/`] = modulePath;
