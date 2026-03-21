@@ -22,9 +22,18 @@ for (const [key] of Object.entries(packageInfo.dependencies)) {
     // read package.json
     const modulePackageJson = JSON.parse(readFileSync(modulePackageJsonFilePath, "utf-8"));
 
-    imports[key] = path.join(modulePath , modulePackageJson.module
+    let moduleMain = modulePackageJson.module
         || (modulePackageJson.type === "module"
-            ? modulePackageJson.main : "index.js"));
+            ? modulePackageJson.main : "index.js");
+
+    const { exports: moduleExports } = modulePackageJson;
+    if(moduleExports) {
+        moduleMain = moduleExports["."]["default"];
+    }
+
+    if (moduleMain) {
+        imports[key] = path.join(modulePath , moduleMain);
+    }
 
     imports[`${key}/`] = modulePath;
 
