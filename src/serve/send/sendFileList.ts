@@ -30,12 +30,15 @@ export default function sendFileList(url: URL, req: IncomingMessage, res: Server
                 mtime = s.mtime;
             } catch {}
             const isPacked = /\@Pack/.test(readFileSync(fullPath, "utf-8"));
-            return { name: d.name, fullPath, isPacked, size, mtime };
+            return { name: d.name, dir: d.parentPath, fullPath, isPacked, size, mtime };
         })
         .filter((x) => packed ? x.isPacked : true)
         .sort((a, b) => {
             // if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
-            return a.name.localeCompare(b.name);
+            if(a.dir !== b.dir) {
+                return a.dir.localeCompare(b.dir);
+            }
+            return a.fullPath.localeCompare(b.fullPath);
         });
 
 

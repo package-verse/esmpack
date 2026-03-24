@@ -47,7 +47,7 @@ export default class FileList extends HtmlControl {
 
         for(const { name, fullPath, isPacked } of items) {
             XNode.append(this, <div>
-                <a href={"/" + fullPath.replace(".js", ".html")}>{ isPacked ? "🌐" : "📄" }{name}</a>
+                <span text={fullPath.substring(0, fullPath.length - name.length)}/><a href={"/" + fullPath.replace(".js", ".html")}>{ isPacked ? "🌐" : "📄" }{name}</a>
             </div>)
         }
     }
