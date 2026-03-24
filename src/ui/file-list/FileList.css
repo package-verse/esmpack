@@ -1,9 +1,14 @@
 file-list {
     display: grid;
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
     grid-template-rows: auto 1fr auto;
+}
+
+file-list a {
+    text-decoration: none;
+}
+
+file-list a:hover {
+    text-decoration: underline;
 }
 
 file-list > header {

@@ -4,10 +4,15 @@ app-container {
     inset: 0;
     overflow: hidden;
     grid-template-rows: auto 1fr auto;
+    padding: 10px;
 }
 
 app-container > header {
     grid-row: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
 }
 
 app-container > main {

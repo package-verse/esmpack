@@ -1,6 +1,7 @@
 const ESMPack = (window as any).ESMPack ??= {};
 ESMPack.render = (imports, cs: HTMLScriptElement) => {
-    const c = new imports.default();
+    const name = customElements.getName(imports.default);
+    const c = document.createElement(name);
     cs.replaceWith(c);
 };
 
