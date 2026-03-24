@@ -1,0 +1,20 @@
+file-list {
+    display: grid;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    grid-template-rows: auto 1fr auto;
+}
+
+file-list > header {
+    grid-row: 1;
+}
+
+file-list > main {
+    grid-row: 2;
+    overflow: auto;
+}
+
+file-list > footer {
+    grid-row: 3;
+}
