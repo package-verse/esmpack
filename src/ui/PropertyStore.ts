@@ -59,5 +59,9 @@ PropertyStore.register("event-click", (e, v) => {
     e.addEventListener("click", v);
 });
 
+PropertyStore.register("event-input", (e, v) => {
+    e.addEventListener("input", v);
+});
+
 
 

@@ -7,12 +7,28 @@ import { createProxyMiddleware, fixRequestBody } from "http-proxy-middleware";
 import colors from "colors";
 import sendJSHost from "./send/sendJSHost.js";
 import sendNonJSModule from "./send/sendNonJSModule.js";
+import sendFileList from "./send/sendFileList.js";
 
 
 let middleware;
 
 export default function WebServer(req: IncomingMessage, res: ServerResponse) {
-    const pathname = new URL(req.url, "http://a").pathname.substring(1);
+    const url = new URL(req.url, "http://a");
+    const pathname = url.pathname.substring(1);
+
+    if (!pathname) {
+        // send list...
+        res.writeHead(301, {
+            "location": "/node_modules/@package-verse/esmpack/App.html"
+        })
+        res.end();
+        return;
+    }
+
+    if (pathname === "$search") {
+        sendFileList(url, req, res);
+        return;
+    }
 
     // check if path exists...
     const fullPath = path.resolve(ProcessOptions.cwd, pathname);

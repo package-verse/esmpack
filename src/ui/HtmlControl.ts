@@ -1,3 +1,8 @@
+const ESMPack = (window as any).ESMPack ??= {};
+ESMPack.render = (imports, cs: HTMLScriptElement) => {
+    const c = new imports.default();
+    cs.replaceWith(c);
+};
 
 export default abstract class HtmlControl extends HTMLElement {
 

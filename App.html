@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <title>JS Components</title>
+</head>
+<body>
+    <script type="importmap">
+        {
+            "imports": {
+                "@package-verse/esmpack/": "/node_modules/@package-verse/esmpack/"
+            }
+        }
+    </script>
+    <script>
+        const cs = document.currentScript;
+        import("@package-verse/esmpack/dist/ui/app/App.js")
+            .then((r) => ESMPack.render(r, cs), (error) => cs.replaceWith(document.createTextNode(error.stack || error)));
+    </script>
+</body>
+</html>
