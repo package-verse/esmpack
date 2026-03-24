@@ -13,6 +13,7 @@
         "noUnusedLocals": true,
         "importHelpers": true,
         "jsxFactory": "XNode.create",
+        "rootDir": "./src",
         "lib": [
             "ES2018",
             "ES2021.WeakRef",
@@ -23,7 +24,7 @@
     },
     "include": [
         "src/**/*"
-, "content/bad.ts"    ],
+    ],
     "exclude": [
 		"node_modules",
 		"tests"
