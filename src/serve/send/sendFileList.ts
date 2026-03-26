@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { join, relative } from "node:path";
 import { ProcessOptions } from "../../ProcessArgs.js";
+import hasPackDecorator from "../../core/hasPackDecorator.js";
 
 
 export default function sendFileList(url: URL, req: IncomingMessage, res: ServerResponse) {
@@ -23,14 +24,14 @@ export default function sendFileList(url: URL, req: IncomingMessage, res: Server
         )
         .map((d) => {
             const filePath = join(d.parentPath, d.name);
-            const fullPath = relative(ProcessOptions.cwd, join(d.parentPath, d.name)).replaceAll("\\", "/");
+            const fullPath = relative(ProcessOptions.cwd, filePath).replaceAll("\\", "/");
             let size = 0, mtime = new Date();
             try {
                 const s = statSync(fullPath);
                 size = s.size;
                 mtime = s.mtime;
             } catch {}
-            const isPacked = /\@Pack/.test(readFileSync(filePath, "utf-8"));
+            const isPacked = hasPackDecorator(filePath);
             return { name: d.name, dir: d.parentPath, fullPath, isPacked, size, mtime };
         })
         .filter((x) => packed ? x.isPacked : true)
