@@ -16,6 +16,7 @@
   "scripts": {
     "test": "exit 0",
     "push": "git add -A && git commit -m \"dep vb\" && npm version patch",
+    "build-css": "npx postcss \"./src/**/*.css\" --base src --dir dist --map --verbose",
     "build-css-watch": "npx postcss \"./src/**/*.css\" --base src --dir dist --map --verbose -w",
     "test-server": "node --enable-source-maps --inspect=0.0.0.0:9229 ./serve.js",
     "postversion": "git push --follow-tags"

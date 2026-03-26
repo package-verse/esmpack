@@ -4,23 +4,13 @@ import packageMap, { IPackageMap } from "./packageMap.js";
 
 /**
  * File Packer must do following tasks...
- * 1. Visit every JavaScript file
- * 2. Change all imports, redirect CSS imports as css.js file that will include CSS on the page ...
- * 3. Create .pack.js with all nested imports if file imports `@web-atoms/core/dist/Pack`
- * 4. Packed file must set all css as installed. And other modules will simply return absolute paths.
+ * 1. Create import-map based on the package.json
+ * 2. Replace all non js imports ...
  *
  * For App.js following packed scripts will be generated.
- * 1. App.pack.js
- *      Push Import Maps script tag
- *      Add import map for non js modules as well, and for this
- *         every nested dependency must be inspected.
- *         Json module should load json via hashed-dependency
- *         Image module should load path of module via hashed-dependency
- *         CSS module should inject full path to the browser 
- *      Push empty module for CSS
- *      Imports all nested dependencies of App.js that should not contain fully qualified path
- *      Import dynamically loaded modules as well
- *      Imports App.js dynamically so CSS can be ready before hosting the User interface
+ * 1. App.packed.js <-- a packed module referencing all modules
+ * 2. App.loader.js <-- a loader JS that will add import map and it will load `App.packed.js` with
+ *    import.
  */
 export default class FilePacker {
 

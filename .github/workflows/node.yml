@@ -21,5 +21,6 @@ jobs:
       - run: npm install -g typescript@5.9.3
       - run: npm install
       - run: tsc
+      - run: npm run build-css
       - run: npm run test
       - run: npm publish --access public
