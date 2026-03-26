@@ -45,8 +45,8 @@ export default function sendFileList(url: URL, req: IncomingMessage, res: Server
     const text = JSON.stringify(entries);
 
     res.writeHead(200, {
-      "Content-Type": "text/json",
-      "cache-control": "no-cache"
+        "Content-Type": "text/json",
+        "cache-control": "no-cache,no-store"
     });
     res.end(text);
 }

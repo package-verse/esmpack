@@ -19,7 +19,8 @@ export default function WebServer(req: IncomingMessage, res: ServerResponse) {
     if (!pathname) {
         // send list...
         res.writeHead(301, {
-            "location": "/node_modules/@package-verse/esmpack/App.html"
+            "location": "/node_modules/@package-verse/esmpack/App.html",
+            "cache-control": "no-cache,no-store"
         })
         res.end();
         return;

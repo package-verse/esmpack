@@ -59,7 +59,8 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
 
     res.writeHead(200, {
         "content-type": "text/javascript",
-        "cache-control": "no-cache"
+        "cache-control": "no-cache,no-store"
+
     });
     res.end(text);
 }
