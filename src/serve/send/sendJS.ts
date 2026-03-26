@@ -15,23 +15,23 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
             sourceFile = filePath;
         }
 
-        if (!url.startsWith(".")) {
+        // if (!url.startsWith(".")) {
 
-            // we need to include .js for every module relative path
-            const tokens = url.split("/");
-            let packageName = tokens.shift();
-            if (packageName.startsWith("@")) {
-                packageName += "/" + tokens.shift();
-            }
+        //     // we need to include .js for every module relative path
+        //     const tokens = url.split("/");
+        //     let packageName = tokens.shift();
+        //     if (packageName.startsWith("@")) {
+        //         packageName += "/" + tokens.shift();
+        //     }
 
-            if (tokens.length) {
-                if (!url.endsWith(".js")) {
-                    return url + ".js";
-                }
-            }
+        //     if (tokens.length) {
+        //         if (!url.endsWith(".js")) {
+        //             return url + ".js";
+        //         }
+        //     }
 
-            return url;
-        }
+        //     return url;
+        // }
 
 
         // is it referenced from source...
