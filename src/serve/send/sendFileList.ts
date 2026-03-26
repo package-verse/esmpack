@@ -22,6 +22,7 @@ export default function sendFileList(url: URL, req: IncomingMessage, res: Server
             && (search ? d.name.toLowerCase().includes(search.toLowerCase()) : true)
         )
         .map((d) => {
+            const filePath = join(d.parentPath, d.name);
             const fullPath = relative(ProcessOptions.cwd, join(d.parentPath, d.name)).replaceAll("\\", "/");
             let size = 0, mtime = new Date();
             try {
@@ -29,7 +30,7 @@ export default function sendFileList(url: URL, req: IncomingMessage, res: Server
                 size = s.size;
                 mtime = s.mtime;
             } catch {}
-            const isPacked = /\@Pack/.test(readFileSync(fullPath, "utf-8"));
+            const isPacked = /\@Pack/.test(readFileSync(filePath, "utf-8"));
             return { name: d.name, dir: d.parentPath, fullPath, isPacked, size, mtime };
         })
         .filter((x) => packed ? x.isPacked : true)
