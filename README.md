@@ -1,20 +1,58 @@
 # esmpack
-ESM Pack Packer and Web Server with PostCSS and ESM Loader
+1. ESM Pack will only generate import maps for ES modules.
+2. And it will change non JS modules to corresponding `import.meta.resolve`.
 
-# Why?
-Because, there is no simple packer that just generates module paths. After ES6 and HTTP2, there is no need to bundle all JavaScripts into a single file. Parsing and loading entire bundle is a single threaded operation, which blocks UI rendering and also consumes very high memory.
+# Usage
+Add `ESMPack.render` and `ESMPack.installStyleSheet` before any stylesheet reference
+```
+const ESMPack = ((window as any).ESMPack ||= {});
+ESMPack.installStyleSheet ||= (x: string) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = x;
+    if (x.includes(".global.")) {
+        document.head.insertAdjacentElement("afterbegin", link);
+        return;
+    }
+    document.body.insertAdjacentElement("afterbegin", link);
+}
 
-# So what does this do?
-1. Creates a single pack JS file which only has import definition of all the imports.
-2. Import map contains inline JavaScript module via data url to inject CSS link into document.
+ESMPack.render ||= (imports, cs: HTMLScriptElement) => {
+    const name = customElements.getName(imports.default);
+    const c = document.createElement(name);
+    cs.replaceWith(c);
+};
+```
 
+# CSS
+```
+import "app.css";
+```
 
-## Dev Packer
+Will transform to
 
-1. Development time packer will generate HTML file along with the import map and inline script to host the module.
-2. Dev Packer will generate `let cs = document.currentScript;import("imported-path").then((r) => ESMPack.render(r, cs))` script inside html for every JS's corresponding html.
-3. Library author must implement `ESMPack.render` method which will accept exports from imported method and `currentScript`.
+```
+ESMPack.installStyleSheet(import.meta.resolve("app.css"));
+```
 
-## Release Packer
+# JSON
+```
+import list from "./countries.json";
+```
 
-1. `pack.js` will generate a single JS file that will inject import map into document and it will call `ESMPack.render` method with import. 
+Will transform to
+
+```
+const list = await (await fetch(import.meta.resolve("./countries.json"))).json();
+```
+
+# Media
+```
+import flag from "./flag.jpg";
+```
+
+Will transform to
+
+```
+const flag = import.meta.resolve("./flag.jpg");
+```
