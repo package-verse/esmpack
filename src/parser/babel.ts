@@ -68,16 +68,27 @@ export class Babel {
                                         return node;
                                     }
                                     if (source.endsWith(".css")) {
-                                        return BabelTypes.callExpression(
+                                        const resolveSource = BabelTypes.callExpression(
+                                                    BabelTypes.memberExpression(
+                                                        BabelTypes.memberExpression(
+                                                            BabelTypes.identifier("import"),
+                                                            BabelTypes.identifier("meta")
+                                                        ),
+                                                        BabelTypes.identifier("resolve")
+                                                    ),
+                                                    [BabelTypes.stringLiteral(source)]
+                                                );
+                                        const t = BabelTypes.callExpression(
                                             BabelTypes.memberExpression(
                                                 BabelTypes.identifier("ESMPack"),
                                                 BabelTypes.identifier("installStyleSheet")
                                             ),
-                                            [BabelTypes.stringLiteral(source)]
+                                            [resolveSource]
                                         );
+                                        return node.replaceWith(t);
                                     }
                                     if (/\.(jpg|webp|webm|gif|png|svg|jpeg)$/i.test(source)) {
-                                        return BabelTypes.variableDeclaration("const",
+                                        return node.replaceWith(BabelTypes.variableDeclaration("const",
                                             [BabelTypes.variableDeclarator(
                                                 BabelTypes.identifier((node.node.specifiers[0] as ImportDefaultSpecifier).local.name),
                                                 BabelTypes.callExpression(
@@ -91,7 +102,7 @@ export class Babel {
                                                     [BabelTypes.stringLiteral(source)]
                                                 )
                                             )]
-                                        );
+                                        ));
                                     }
                                     if (/\.json$/i.test(source)) {
                                         const resolveSource = BabelTypes.callExpression(
@@ -110,7 +121,7 @@ export class Babel {
                                                 [resolveSource]
                                             )
                                         );
-                                        return BabelTypes.variableDeclaration("const",
+                                        return node.replaceWith(BabelTypes.variableDeclaration("const",
                                             [BabelTypes.variableDeclarator(
                                                 BabelTypes.identifier((node.node.specifiers[0] as ImportDefaultSpecifier).local.name),
                                                 BabelTypes.awaitExpression(
@@ -122,11 +133,11 @@ export class Babel {
                                                     )
                                                 )
                                             )]
-                                        );
+                                        ));
                                     }
-                                    const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
-                                    source = resolve(source, sourceFile);
-                                    e.source.value = source;
+                                    // const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
+                                    // source = resolve(source, sourceFile);
+                                    // e.source.value = source;
                                     return node;
                                 },
                             }

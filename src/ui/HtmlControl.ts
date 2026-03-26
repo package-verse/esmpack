@@ -1,10 +1,3 @@
-const ESMPack = (window as any).ESMPack ??= {};
-ESMPack.render = (imports, cs: HTMLScriptElement) => {
-    const name = customElements.getName(imports.default);
-    const c = document.createElement(name);
-    cs.replaceWith(c);
-};
-
 export default abstract class HtmlControl extends HTMLElement {
 
     connectedCallback() {
