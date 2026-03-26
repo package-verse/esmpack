@@ -87,6 +87,8 @@ export class Babel {
                                         );
                                         return node.replaceWith(t);
                                     }
+                                    const sourceFile = (node.hub as any)?.file?.inputMap?.sourcemap?.sources?.[0];
+                                    source = resolve(source, sourceFile);
                                     if (/\.(jpg|webp|webm|gif|png|svg|jpeg)$/i.test(source)) {
                                         return node.replaceWith(BabelTypes.variableDeclaration("const",
                                             [BabelTypes.variableDeclarator(

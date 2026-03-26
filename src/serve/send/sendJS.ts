@@ -40,14 +40,14 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
         const referencedAbsolutePath = path.join(absoluteSourcePath, url);
         if (existsSync(referencedAbsolutePath)) {
             const relative = path.relative(dir, referencedAbsolutePath).replaceAll("\\", "/");
-            if(!relative.endsWith(".js")) {
-                return relative + ".js";
-            }
+            // if(!relative.endsWith(".js")) {
+            //     return relative + ".js";
+            // }
             return relative;
         }
 
 
-        return url + ".js";
+        return url;
     };
 
 
