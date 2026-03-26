@@ -8,9 +8,11 @@ import packageMap, { IPackageMap } from "./packageMap.js";
  * 2. Replace all non js imports ...
  *
  * For App.js following packed scripts will be generated.
- * 1. App.packed.js <-- a packed module referencing all modules
- * 2. App.loader.js <-- a loader JS that will add import map and it will load `App.packed.js` with
- *    import.
+ * 1. App.pack.js will be generated
+ * 2. This will install import-map
+ * 3. Import map must add fully qualified url with version
+ * 3. And it will add module preloader
+ * 4. And it will load fully qualified App.js
  */
 export default class FilePacker {
 
