@@ -57,8 +57,8 @@ async function processJS({ fullPath, relativePath }) {
         const packed = fp.imports.map((x) => `import "${x}";`).join("\n");
         const main = `${packed}
         import app from "${moduleUrl}";
-        ESMPack.render(app); 
-        `;
+        export default app; 
+        `.split("\n").map((x) => x.trim()).join("\n");
         const { dir, name } = parse(fullPath);
         await writeFile(`${dir}/${name}.pack.js`, main, "utf-8");
     }
