@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { readdirSync, statSync } from "node:fs";
 import { IncomingMessage, ServerResponse } from "node:http";
 import { join, relative } from "node:path";
 import { ProcessOptions } from "../../ProcessArgs.js";

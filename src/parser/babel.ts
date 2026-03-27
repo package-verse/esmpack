@@ -29,7 +29,7 @@ export class Babel {
     static async transformAsync({
         file,
         resolve,
-        dynamicResolve
+        dynamicResolve = void 0
     }) {
         const presets: TransformOptions = Babel.prepareOptions(file, dynamicResolve, resolve);
 

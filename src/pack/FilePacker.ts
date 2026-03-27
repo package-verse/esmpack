@@ -1,6 +1,7 @@
 import path from "path";
 import { Babel } from "../parser/babel.js";
-import packageMap, { IPackageMap } from "./packageMap.js";
+import { packageInfo } from "../serve/send/packageInfo.js";
+import TaskManager from "../core/TaskManager.js";
 
 /**
  * File Packer must do following tasks...
@@ -16,69 +17,73 @@ import packageMap, { IPackageMap } from "./packageMap.js";
  */
 export default class FilePacker {
 
-    readonly absoluteSrc: string;
+    imports = [];
 
-    modules: IPackageMap;
+    done = new Set();
 
-    readonly cssImports = [];
-
-    readonly jsonImports = [];
-
-    readonly pathImports = [];
+    tm = new TaskManager();
 
     constructor(
         public readonly root: string,
-        public readonly src: string,
-        public readonly prefix: string
+        public readonly resolve: (url: string, sourceFile?: string) => string,
     ) {
-        // empty
-        // let us make src relative to the root if an absolute path was supplied
-        if (path.isAbsolute(this.src)) {
-            this.src = path.relative(this.root, this.src);
-        }
-        this.absoluteSrc = path.resolve(this.root, this.src);
     }
 
-    async pack() {
+    async pack({
+        file,
+        root = this.root,
+        packageName = packageInfo.name,
+        moduleUrl = packageName + "/" + path.relative(root, file).replaceAll("\\", "/")
+    }) {
 
-        // resolve package.json
-        this.modules = await packageMap(this.root);
+        if (!this.done.has(moduleUrl)) {
+            this.imports.push(moduleUrl);
+        }
+        this.done.add(moduleUrl);
 
-        const resolve = (url, sourceFile) => this.resolve(url, sourceFile);
+        const fileDir = path.dirname(file);
+
+        const resolve = (url: string , sourceFile: string) => {
+            if (!url.endsWith(".js")) {
+                return url;
+            }
+            url = this.resolve(url, sourceFile);
+            if (url.startsWith(".")) {
+                const dependencyFile = path.join(fileDir, url);
+                url = path.relative(root, dependencyFile).replaceAll("\\", "/");
+                url = `${packageName}/${url}`;
+                if (this.done.has(url)) {
+                    return url;
+                }
+                this.tm.queueRun(() => this.pack({ file: dependencyFile, root, packageName, moduleUrl: url }));
+            } else {
+                if (this.done.has(url)) {
+                    return url;
+                }
+                const dependencyFile = this.root + "/node_modules/" + url;
+                const tokens = url.split("/");
+                let packageName = tokens.shift();
+                if (packageName.startsWith("@")) {
+                    packageName += tokens.shift();
+                }
+                const rootFolder = this.root + "/node_modules/" + packageName;
+                this.tm.queueRun(() => this.pack({
+                    file: dependencyFile,
+                    root: rootFolder,
+                    packageName,
+                    moduleUrl: url
+                }));
+            }
+            return url;
+        }
+
 
         // we don't need the code
         await Babel.transformAsync({
-            file: path.join(this.root, this.src),
+            file,
             resolve,
             dynamicResolve: resolve
         });
 
-
-    }
-
-    resolve(url: string, sourceFile: string) {
-
-        const moduleUrl = this.moduleUrl(url, sourceFile);
-
-        if (url.endsWith(".css")) {
-            this.cssImports.push(moduleUrl);
-            return url;
-        }
-        if (url.endsWith(".json")) {
-            this.jsonImports.push(moduleUrl);
-            return url;
-        }
-
-        if (!url.endsWith(".js")) {
-
-        }
-        return url;
-    }
-
-    moduleUrl(url: string, sourceFile: string) {
-
-
-
-        return url;
     }
 }
