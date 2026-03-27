@@ -33,7 +33,7 @@ export default class FilePacker {
         file,
         root = this.root,
         packageName = packageInfo.name,
-        moduleUrl = packageName + "/" + path.relative(root, file).replaceAll("\\", "/")
+        moduleUrl = this.moduleUrl(file, packageName, root)
     }) {
 
         if (!this.done.has(moduleUrl)) {
@@ -85,5 +85,9 @@ export default class FilePacker {
             dynamicResolve: resolve
         });
 
+    }
+
+    public moduleUrl(file, packageName = packageInfo.name, root = this.root) {
+        return packageName + "/" + path.relative(root, file).replaceAll("\\", "/");
     }
 }

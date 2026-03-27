@@ -50,11 +50,17 @@ async function processJS({ fullPath, relativePath }) {
         // need to create a packed file...
         console.log(`Packing ${fullPath}`);
         const fp = new FilePacker(ProcessOptions.cwd, resolve);
+        const  moduleUrl = fp.moduleUrl(fullPath);
+        fp.done.add(moduleUrl);
         await fp.pack({ file: fullPath });
         await fp.tm.wait();
         const packed = fp.imports.map((x) => `import "${x}";`).join("\n");
+        const main = `${packed}
+        import app from "${moduleUrl}";
+        ESMPack.render(app); 
+        `;
         const { dir, name } = parse(fullPath);
-        await writeFile(`${dir}/${name}.pack.js`, packed, "utf-8");
+        await writeFile(`${dir}/${name}.pack.js`, main, "utf-8");
     }
 
 }
