@@ -1,6 +1,6 @@
 {
   "name": "@package-verse/esmpack",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "ESM Pack Packer and Web Server with PostCSS and ESM Loader",
   "homepage": "https://github.com/package-verse/esmpack#readme",
   "bugs": {
