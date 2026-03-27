@@ -1,6 +1,6 @@
 import path from "path";
 import { Babel } from "../parser/babel.js";
-import { packageInfo } from "../serve/send/packageInfo.js";
+import { importMap, packageInfo } from "../serve/send/packageInfo.js";
 import TaskManager from "../core/TaskManager.js";
 
 /**
@@ -50,8 +50,7 @@ export default class FilePacker {
             url = this.resolve(url, sourceFile);
             if (url.startsWith(".")) {
                 const dependencyFile = path.join(fileDir, url);
-                url = path.relative(root, dependencyFile).replaceAll("\\", "/");
-                url = `${packageName}/${url}`;
+                url = path.join(path.dirname(moduleUrl), url).replaceAll("\\", "/");
                 if (this.done.has(url)) {
                     return url;
                 }
@@ -60,12 +59,19 @@ export default class FilePacker {
                 if (this.done.has(url)) {
                     return url;
                 }
-                const dependencyFile = this.root + "/node_modules/" + url;
+                let dependencyFile = this.root + "/node_modules/" + url;
                 const tokens = url.split("/");
                 let packageName = tokens.shift();
                 if (packageName.startsWith("@")) {
-                    packageName += tokens.shift();
+                    packageName += "/" + tokens.shift();
                 }
+
+                // check if package.json has esm folder rewrite...
+                const distReWrite = importMap.imports[packageName + "/dist/"];
+                if (distReWrite) {
+                    dependencyFile = this.root + distReWrite + url.replace(packageName + "/dist/","");
+                }
+
                 const rootFolder = this.root + "/node_modules/" + packageName;
                 this.tm.queueRun(() => this.pack({
                     file: dependencyFile,
