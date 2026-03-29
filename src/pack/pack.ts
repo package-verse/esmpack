@@ -6,7 +6,6 @@ import { hasPackDecoratorAsync } from "../core/hasPackDecorator.js";
 import { Babel } from "../parser/babel.js";
 import { existsSync } from "node:fs";
 import FilePacker from "./FilePacker.js";
-import { importMap } from "../serve/send/packageInfo.js";
 import { generateMap } from "../import-map/generateMap.js";
 
 declare let document: Document;
