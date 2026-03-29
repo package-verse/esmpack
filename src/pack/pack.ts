@@ -12,6 +12,10 @@ declare let document: Document;
 declare let ESMPack: any;
 
 function loadUI({ map: { imports }, url }) {
+
+    const ESMPack = ((window as any).ESMPack ??= {});
+    ESMPack.installStyleSheet ||= (s) => setTimeout(() => ESMPack.installStyleSheet(s), 10);
+
     const cs = document.currentScript;
     const src = cs.getAttribute("src");
     const u = new URL(src, location.href);
