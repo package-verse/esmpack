@@ -6,6 +6,22 @@ import { hasPackDecoratorAsync } from "../core/hasPackDecorator.js";
 import { Babel } from "../parser/babel.js";
 import { existsSync } from "node:fs";
 import FilePacker from "./FilePacker.js";
+import { importMap } from "../serve/send/packageInfo.js";
+import { generateMap } from "../import-map/generateMap.js";
+
+declare let document: Document;
+declare let ESMPack: any;
+
+function loadUI({ map, url }) {
+    const importMap = document.createElement("script");
+    importMap.type = "import-map";
+    importMap.textContent = JSON.stringify(map);
+    document.body.insertAdjacentElement("afterbegin", importMap);
+    setTimeout(() => {
+        const cs = document.currentScript;    
+        import(url).then((r) => ESMPack.render(r, cs), console.error);
+    },1);
+}
 
 
 async function processJS({ fullPath, relativePath }) {
@@ -61,6 +77,21 @@ async function processJS({ fullPath, relativePath }) {
         `.split("\n").map((x) => x.trim()).join("\n");
         const { dir, name } = parse(fullPath);
         await writeFile(`${dir}/${name}.pack.js`, main, "utf-8");
+
+        // create loader
+        const loader = ProcessOptions["--loader-cdn"];
+        if (loader) {
+
+            const map = generateMap(loader);
+
+            const loaderFile = `${dir}/${name}.loader.js`;
+            await writeFile(loaderFile, `
+            (${loadUI})({
+                map: ${map},
+                url: "${moduleUrl.replace(/\.js$/, ".pack.js")}"
+            });
+            `, "utf-8");
+        }
     }
 
 }

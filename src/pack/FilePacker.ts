@@ -2,6 +2,7 @@ import path from "path";
 import { Babel } from "../parser/babel.js";
 import { importMap, packageInfo } from "../serve/send/packageInfo.js";
 import TaskManager from "../core/TaskManager.js";
+import { existsSync } from "fs";
 
 /**
  * File Packer must do following tasks...
@@ -54,7 +55,9 @@ export default class FilePacker {
                 if (this.done.has(url)) {
                     return url;
                 }
-                this.tm.queueRun(() => this.pack({ file: dependencyFile, root, packageName, moduleUrl: url }));
+                if (existsSync(dependencyFile)) {
+                    this.tm.queueRun(() => this.pack({ file: dependencyFile, root, packageName, moduleUrl: url }));
+                }
             } else {
                 if (this.done.has(url)) {
                     return url;
@@ -73,12 +76,14 @@ export default class FilePacker {
                 }
 
                 const rootFolder = this.root + "/node_modules/" + packageName;
-                this.tm.queueRun(() => this.pack({
-                    file: dependencyFile,
-                    root: rootFolder,
-                    packageName,
-                    moduleUrl: url
-                }));
+                if (existsSync(dependencyFile)) {
+                    this.tm.queueRun(() => this.pack({
+                        file: dependencyFile,
+                        root: rootFolder,
+                        packageName,
+                        moduleUrl: url
+                    }));
+                }
             }
             return url;
         }
