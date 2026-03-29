@@ -12,7 +12,7 @@ function generate(prefix: string) {
         [packageInfo.name + "/"]: "/"
     };
 
-    for (const [key] of Object.entries(packageInfo.dependencies)) {
+    for (const [key] of Object.entries(packageInfo.dependencies ?? [])) {
 
         const modulePackageJsonFilePath = join(ProcessOptions.cwd, "node_modules", key , "package.json");
         if (!existsSync(modulePackageJsonFilePath)) {
