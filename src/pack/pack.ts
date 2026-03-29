@@ -11,13 +11,19 @@ import { generateMap } from "../import-map/generateMap.js";
 declare let document: Document;
 declare let ESMPack: any;
 
-function loadUI({ map, url }) {
+function loadUI({ map: { imports }, url }) {
+    const cs = document.currentScript;
+    const src = cs.getAttribute("src");
+    const u = new URL(src, location.href);
+    const newImports = {};
+    for(const k in imports) {
+        newImports[k] = `//${u.host}${imports[k]}`;
+    }
     const importMap = document.createElement("script");
-    importMap.type = "import-map";
-    importMap.textContent = JSON.stringify(map);
+    importMap.type = "importmap";
+    importMap.textContent = JSON.stringify({ imports: newImports });
     document.body.insertAdjacentElement("afterbegin", importMap);
     setTimeout(() => {
-        const cs = document.currentScript;    
         import(url).then((r) => ESMPack.render(r, cs), console.error);
     },1);
 }
