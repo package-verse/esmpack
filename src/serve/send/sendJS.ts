@@ -2,8 +2,15 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { Babel } from "../../parser/babel.js";
 import path, { parse } from "node:path";
 import { existsSync } from "node:fs";
+import { sendETagMatch } from "./sendETagMatch.js";
 
 export default function sendJS(filePath: string, req: IncomingMessage, res: ServerResponse) {
+
+
+    const { etag, stats } = sendETagMatch(filePath, req, res);
+    if (!etag) {
+        return;
+    }
 
     const resolve = (url: string, sourceFile: string) => {
 
@@ -61,8 +68,9 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
 
     res.writeHead(200, {
         "content-type": "text/javascript",
-        "cache-control": "no-cache,no-store"
-
+        "cache-control": "no-cache",
+        "etag": etag,
+        "last-modified": stats.mtime.toUTCString()
     });
     res.end(text);
 }

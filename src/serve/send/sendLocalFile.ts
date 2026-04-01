@@ -3,6 +3,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import mime from "mime";
 import sendList from "./sendList.js";
 import sendJS from "./sendJS.js";
+import { sendETagMatch } from "./sendETagMatch.js";
 export default function sendLocalFile(reqPath: string, path: string, req: IncomingMessage, res: ServerResponse) {
 
     if (path.endsWith(".js")
@@ -17,21 +18,24 @@ export default function sendLocalFile(reqPath: string, path: string, req: Incomi
         // list...
         return sendList(reqPath, path, req, res);
     }
-    // just pipe the file...
-    sendFile(path, res);
-}
 
-function sendFile(filePath, res) {
-  const stream = createReadStream(filePath);
-  stream.on("error", (err) => {
-    if (!res.headersSent) {
-      res.writeHead(500, { "Content-Type": "text/plain" });
-      res.end(`500 Internal Server Error\n\n${err.message}`);
+    const { etag, stats } = sendETagMatch(path, req, res);
+    if (!etag) {
+        return;
     }
-  });
-  res.writeHead(200, {
-    "Content-Type": mime.getType(filePath),
-    "cache-control": "no-cache"
-  });
-  stream.pipe(res);
+
+    const stream = createReadStream(path);
+    stream.on("error", (err) => {
+      if (!res.headersSent) {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end(`500 Internal Server Error\n\n${err.message}`);
+      }
+    });
+    res.writeHead(200, {
+      "Content-Type": mime.getType(path),
+      "cache-control": "no-cache",
+      "etag": etag,
+      "last-modified": stats.mtime.toUTCString()
+    });
+    stream.pipe(res);
 }
