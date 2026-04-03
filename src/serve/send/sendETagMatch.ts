@@ -19,7 +19,6 @@ export const sendETagMatch = (
             res.end();
             return {};
         }
-        console.error(`ETag ${clientETag} !== ${etag}`);
     }
 
     return { etag, stats };
