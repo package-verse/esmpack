@@ -27,9 +27,10 @@ function loadUI({ map: { imports }, url }) {
     importMap.type = "importmap";
     importMap.textContent = JSON.stringify({ imports: newImports });
     document.body.insertAdjacentElement("afterbegin", importMap);
-    setTimeout(() => {
-        import(url).then((r) => ESMPack.render(r, cs), console.error);
-    },1);
+    queueMicrotask(() => 
+        import(url)
+            .then((r) => ESMPack.render(r, cs), console.error)
+    );
 }
 
 
