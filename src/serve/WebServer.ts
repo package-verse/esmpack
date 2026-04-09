@@ -27,7 +27,7 @@ export default function WebServer(req: IncomingMessage, res: ServerResponse) {
     }
 
     if (pathname === "$search") {
-        sendFileList(url, req, res);
+        sendFileList(url, req, res).catch(console.error);
         return;
     }
 
