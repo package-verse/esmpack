@@ -25,7 +25,7 @@ export default async function sendFileList(url: URL, req: IncomingMessage, res: 
                 && !d.name.startsWith(".")
                 && d.name.endsWith(".js")
                 && d.name !== "node_modules"
-                && !d.parentPath.replaceAll("\\", "/").includes("node_modules/")
+                && !(d.parentPath.includes("node_modules/") && d.parentPath.includes("node_modules\\"))
                 && (search ? d.name.toLowerCase().includes(search.toLowerCase()) : true)
             );
 
