@@ -19,11 +19,11 @@ export class Babel {
     }) {
 
         const presets: TransformOptions = Babel.prepareOptions(file, dynamicResolve, resolve);
-
+        presets.sourceMaps = "inline";
         const p = { ... presets, filename: file };
         const code = readFileSync(file, "utf8");
         const result = transformSync(code, p);
-        return result.code;
+        return result;
     }
 
     static async transformAsync({
@@ -36,7 +36,7 @@ export class Babel {
         const p = { ... presets, filename: file };
         const code = await readFile(file, "utf8");
         const result = transformSync(code, p);
-        return result.code;
+        return result;
 
     }
 

@@ -61,18 +61,22 @@ async function processJS({ fullPath, relativePath }) {
     };
 
     // rewrite non JS imports
-    let code = await Babel.transformAsync({
+    const result = await Babel.transformAsync({
         file: fullPath ,
         resolve
     });
 
+    let code = result.code;
+
     // append source map as Babel removes it...
-    if (existsSync(fullPath + ".map")) {
-        const { base } = parse(fullPath);
-        code += `\n//# sourceMappingURL=${base}.map`;
-    }
+    // if (existsSync(fullPath + ".map")) {
+    const { base } = parse(fullPath);
+    const mapName = `${base}.map`;
+    code += `\n//# sourceMappingURL=${mapName}`;
+    // }
 
     await writeFile(fullPath, code, "utf-8");
+    await writeFile(`${fullPath}.map`, JSON.stringify(result.map), "utf-8");
 
     if (fullPath.endsWith(".pack.js")) {
         return;

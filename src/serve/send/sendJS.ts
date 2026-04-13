@@ -58,13 +58,14 @@ export default function sendJS(filePath: string, req: IncomingMessage, res: Serv
     };
 
 
-    let text = Babel.transform({ file: filePath, resolve, dynamicResolve: resolve});
+    const result = Babel.transform({ file: filePath, resolve, dynamicResolve: resolve});
+    let text = result.code;
 
-    const { base } = parse(filePath);
+    // const { base } = parse(filePath);
 
-    if (existsSync(filePath + ".map")) {
-        text += `\n//# sourceMappingURL=${base}.map`;
-    }
+    // if (existsSync(filePath + ".map")) {
+    //     text += `\n//# sourceMappingURL=${base}.map`;
+    // }
 
     res.writeHead(200, {
         "content-type": "text/javascript",
