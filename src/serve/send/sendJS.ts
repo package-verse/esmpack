@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import { Babel } from "../../parser/babel.js";
-import path, { parse } from "node:path";
+import path from "node:path";
 import { existsSync } from "node:fs";
 import { sendETagMatch } from "./sendETagMatch.js";
 
